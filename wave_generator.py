@@ -7,7 +7,7 @@ p = pyaudio.PyAudio()
 volume = 0.5     # range [0.0, 1.0]
 fs = 41000       # sampling rate, Hz, must be integer
 duration = 10   # in seconds, may be float
-f = 500      # sine frequency, Hz, may be float
+f = 1000      # sine frequency, Hz, may be float
 
 time_array = np.arange(fs*duration)
 
