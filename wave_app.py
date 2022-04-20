@@ -44,9 +44,44 @@ class WaveGeneratorApp:
 
         self.fig, self.ax = plt.subplots(figsize = (2,3))
 
+
+#####################################
+
+        self.btn1=Button(win, text="Go1")
+        self.btn1.bind('<Button-1>', self.generate_tone1)
+        self.btn1.place(x=180, y=300, anchor = "center")
+
+        self.freqfld1=Entry(win, text="Frequency1")
+        self.freqfld1.place(x=80, y=230, width = 80, anchor = "center")
+        self.freqlabel1 = Label(win, text = "Frequency (Hz)")
+        self.freqlabel1.place(x=80, y=260, width = 100, anchor = "center")
+
+        self.durfld1=Entry(win, text="Duration1")
+        self.durfld1.place(x=180, y=230, width = 80, anchor = "center")
+        self.durlabel1 = Label(win, text = "Duration (s)")
+        self.durlabel1.place(x=180, y=260, width = 100, anchor = "center")
+
+        self.speakfld1=Entry(win, text="Speaker1")
+        self.speakfld1.place(x=280, y=230, width = 80, anchor = "center")
+        self.speakerlabel1 = Label(win, text = "Speaker")
+        self.speakerlabel1.place(x=280, y=250, width = 100, anchor = "center")
+        self.speakerlabel1 = Label(win, text = "0: left, 1: right")
+        self.speakerlabel1.place(x=280, y=300, anchor = "center")
+        self.speakerlabel1 = Label(win, text = "2: both")
+        self.speakerlabel1.place(x=280, y=320, anchor = "center")
+
+        self.fig1, self.ax1 = plt.subplots(figsize = (2,3))
+
+
+        
         self.canvas = FigureCanvasTkAgg(self.fig, master = window)
         self.canvas.get_tk_widget().pack(side = tkinter.RIGHT,fill=tkinter.Y)
-        NavigationToolbar2Tk(self.canvas, win)
+
+
+        #self.canvas1 = FigureCanvasTkAgg(self.fig1, master = window)
+        #self.canvas1.get_tk_widget().pack(side = tkinter.LEFT,fill=tkinter.Y)
+        #NavigationToolbar2Tk(self.canvas, win)
+        #NavigationToolbar2Tk(self.canvas1, win)
 
 
     def generate_tone(self,win):
@@ -79,6 +114,45 @@ class WaveGeneratorApp:
             stream = p.open(format=pyaudio.paFloat32,
                             channels=channels,
                             rate=self.fs,
+                            output=True)
+            chunks = []
+            chunks.append(signal)
+            chunk = np.concatenate(chunks)*0.1
+            stream.write(chunk.astype(np.float32).tobytes())
+            stream.stop_stream()
+            stream.close()
+        p.terminate()
+
+    def generate_tone1(self,win):
+        p = pyaudio.PyAudio()
+        volume = 1     # range [0.0, 1.0]
+        self.fs1 = 41000       # sampling rate, Hz, must be integer
+        self.duration1 = int(self.durfld1.get())   # in seconds, may be float
+        self.f1 = int(self.freqfld1.get())      # sine frequency, Hz, may be float
+
+        self.time_array1 = np.arange(self.fs1*self.duration1)
+
+        self.wave1 = np.sin(2*np.pi*self.time_array1*self.f1/self.fs1).astype(np.float32)
+        #self.waveplot1 = np.sin(2*np.pi*self.time_array1*self.f1/self.fs1).astype(np.float32)
+
+        #self.plot_function(self.fig1, self.ax1)
+
+        signal = volume*self.wave1
+        channels = 1
+
+        self.speaker1 = int(self.speakfld1.get())
+
+        if self.speaker1 == 0 or self.speaker1 == 1:
+            signal = volume*self.wave1
+            channels = 2
+            stereo_signal = np.zeros([len(signal), 2])
+            stereo_signal[:, self.speaker1] = signal[:]
+            signal = stereo_signal
+
+        if self.speaker1 == 0 or self.speaker1 == 1 or self.speaker1 == 2:
+            stream = p.open(format=pyaudio.paFloat32,
+                            channels=channels,
+                            rate=self.fs1,
                             output=True)
             chunks = []
             chunks.append(signal)
