@@ -14,22 +14,33 @@ class WaveGeneratorApp:
         window.geometry("600x400+10+20")
 
         self.title = Label(win, text = 'Wave Generator App', font = ("Arial",25))
-        self.title.place(x = 140, anchor = "center", y=25)
+        self.title.place(x = 180, anchor = "center", y=25)
         self.course = Label(win, text = 'ENGN 1735: Vibrations')
-        self.course.place(x = 140, anchor = "center", y=50)
+        self.course.place(x = 180, anchor = "center", y=50)
         # self.authors = Label(win, text = 'Jack-William Barotta, Johnny Boustany, Maya Lewis, and Joshua Neronha')
         # self.authors.place(x = 300, anchor = "center", y=70)
         self.btn=Button(win, text="Go")
         self.btn.bind('<Button-1>', self.generate_tone)
-        self.btn.place(x=130, y=180, anchor = "center")
+        self.btn.place(x=180, y=180, anchor = "center")
+
         self.freqfld=Entry(win, text="Frequency")
         self.freqfld.place(x=80, y=110, width = 80, anchor = "center")
         self.freqlabel = Label(win, text = "Frequency (Hz)")
         self.freqlabel.place(x=80, y=140, width = 100, anchor = "center")
+
         self.durfld=Entry(win, text="Duration")
         self.durfld.place(x=180, y=110, width = 80, anchor = "center")
         self.durlabel = Label(win, text = "Duration (s)")
         self.durlabel.place(x=180, y=140, width = 100, anchor = "center")
+
+        self.speakfld=Entry(win, text="Speaker")
+        self.speakfld.place(x=280, y=110, width = 80, anchor = "center")
+        self.speakerlabel = Label(win, text = "Speaker")
+        self.speakerlabel.place(x=280, y=140, width = 100, anchor = "center")
+        self.speakerlabel = Label(win, text = "0: left, 1: right")
+        self.speakerlabel.place(x=280, y=180, anchor = "center")
+        self.speakerlabel = Label(win, text = "2: both")
+        self.speakerlabel.place(x=280, y=200, anchor = "center")
 
         self.fig, self.ax = plt.subplots(figsize = (2,3))
 
@@ -39,10 +50,7 @@ class WaveGeneratorApp:
 
 
     def generate_tone(self,win):
-
-
         p = pyaudio.PyAudio()
-
         volume = 1     # range [0.0, 1.0]
         self.fs = 41000       # sampling rate, Hz, must be integer
         self.duration = int(self.durfld.get())   # in seconds, may be float
@@ -50,22 +58,36 @@ class WaveGeneratorApp:
 
         self.time_array = np.arange(self.fs*self.duration)
 
-        self.wave = np.sin(2*np.pi*self.time_array*self.f/self.fs).astype(np.float32).tobytes()
+        self.wave = np.sin(2*np.pi*self.time_array*self.f/self.fs).astype(np.float32)
         self.waveplot = np.sin(2*np.pi*self.time_array*self.f/self.fs).astype(np.float32)
 
         self.plot_function(self.fig, self.ax)
 
-        stream = p.open(format=pyaudio.paFloat32,
-                        channels=1,
-                        rate=self.fs,
-                        output=True)
+        signal = volume*self.wave
+        channels = 1
 
-        stream.write(volume*self.wave)
+        self.speaker = int(self.speakfld.get())
 
-        stream.stop_stream()
-        stream.close()
+        if self.speaker == 0 or self.speaker == 1:
+            signal = volume*self.wave
+            channels = 2
+            stereo_signal = np.zeros([len(signal), 2])
+            stereo_signal[:, self.speaker] = signal[:]
+            signal = stereo_signal
 
+        if self.speaker == 0 or self.speaker == 1 or self.speaker == 2:
+            stream = p.open(format=pyaudio.paFloat32,
+                            channels=channels,
+                            rate=self.fs,
+                            output=True)
+            chunks = []
+            chunks.append(signal)
+            chunk = np.concatenate(chunks)*0.1
+            stream.write(chunk.astype(np.float32).tobytes())
+            stream.stop_stream()
+            stream.close()
         p.terminate()
+
     def plot_function(self, fig, ax):
 
         # fig, ax = plt.subplots(figsize = (2,1))
