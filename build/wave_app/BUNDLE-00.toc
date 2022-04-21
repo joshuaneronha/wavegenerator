@@ -1,0 +1,3 @@
+([('wave_app',
+   '/Users/johnnyboustany/Desktop/wavegenerator/dist/wave_app',
+   'EXECUTABLE')],)
