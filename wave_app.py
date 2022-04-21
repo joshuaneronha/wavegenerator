@@ -6,12 +6,32 @@ import pyaudio
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from PIL import ImageTk, Image
+import pkgutil
+
 
 class WaveGeneratorApp:
     def __init__(self,win):
 
         window.title('Wave Generator Applet')
         window.geometry("600x400+10+20")
+
+        brownraw = pkgutil.get_data('resources','brown.png')
+        harrisraw = pkgutil.get_data('resources','harris.png')
+
+        brown = ImageTk.PhotoImage(Image.open(brownraw))
+
+
+
+        harris = ImageTk.PhotoImage(Image.open(harrisraw))
+
+        self.brownlogo = Label(image=brown)
+        self.brownlogo.image = brown
+        self.brownlogo.place(x = 100, anchor = "center", y=300)
+
+        self.harrislogo = Label(image=harris)
+        self.harrislogo.image = harris
+        self.harrislogo.place(x = 240, anchor = "center", y=300)
 
         self.title = Label(win, text = 'Wave Generator App', font = ("Arial",25))
         self.title.place(x = 140, anchor = "center", y=25)
