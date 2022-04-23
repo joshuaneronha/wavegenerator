@@ -43,7 +43,7 @@ class WaveGeneratorApp:
         #self.course = Label(win, text = 'RIGHT')
         #self.course.place(x = 250, anchor = "center", y=110)
 
-        self.fig, self.ax = plt.subplots(figsize = (2,3))
+        self.fig, self.ax = plt.subplots(figsize = (3,3))
         self.canvas = FigureCanvasTkAgg(self.fig, master = window)
         self.canvas.get_tk_widget().pack(side = tkinter.RIGHT,fill=tkinter.Y)
         NavigationToolbar2Tk(self.canvas, win)
