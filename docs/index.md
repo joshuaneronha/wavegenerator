@@ -8,4 +8,6 @@ The software is Python-based and has a tkinter-based GUI and is packaged with py
 
 You can download the alpha version of the software [here](https://github.com/joshuaneronha/wavegenerator/raw/main/dist.zip).
 
+<h5>Note: MacOS will probably not let you open the software by default because we are not "identified" developers! Just right-click on the app icon and hit open and accept the warning if you choose to run our software. It make take some time to start up.</h5>
+
 ![A screenshot of the application in use on a mac](example.png)
